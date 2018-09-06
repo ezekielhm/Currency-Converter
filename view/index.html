@@ -1,0 +1,69 @@
+<html>
+	<head>
+		<title>Currency Converter</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0-beta.1/axios.js"></script>
+		<script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
+		<link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+	</head>
+	<body>
+		<style>
+		    #databinding{
+		        padding: 20px 15px 15px 15px;
+		        margin: 0 0 25px 0;
+		        width: auto;
+		        background-color: #e7e7e7;
+		        text-align: center;
+		    }
+		    span, option, input, button {
+		       font-size:25px;
+		    }
+		    #MultipleConvert{
+		    	margin-top: 60px;
+		    }
+      	</style>
+		<div id = "databinding" style = "">
+			<h1>Currency Converter</h1>
+			<span>Enter Amount:</span><input type = "number" v-model.number = "amount" placeholder = "Enter Amount" /><br/><br/>
+			<span>Convert From:</span>
+			<select v-model = "convertfrom" style = "width:300px;font-size:25px;">
+			<option v-for = "(a, index) in currencyfrom"  v-bind:value = "a.name">{{a.desc}}</option>
+			</select>
+			<br/><br/>
+			<h1>Single Currency Converter</h1>
+			<br/><br/>
+			<span>Convert To:</span>
+			<select v-model = "convertto" style = "width:300px;font-size:25px;">
+			<option v-for = "(a, index) in currencyfrom" v-bind:value = "a.name">{{a.desc}}</option>
+			</select><br/><br/>
+			<button v-on:click="convertCurency">Convert</button>
+			<input type = "text" v-model = "finalAmount" placeholder = "Final Amount" />
+
+			<div id = "MultipleConvert">
+				<h1>Multiple Convert Currency and Download CSV file</h1>
+				<center>
+					<div style="max-width: 70%">
+						<multiselect v-model="MultiCurrvalue" :options="currencyfrom" :multiple="true" :close-on-select="false" :clear-on-select="false" :hide-selected="true" :preserve-search="true" placeholder="Pick up to 6 currency" label="desc" track-by="name">
+							<template slot="tag" slot-scope="props"><span class="custom__tag"><span>{{ props.option.desc }}</span><span class="custom__remove" @click="props.remove(props.option)">❌</span></span></template>
+						</multiselect>
+						<br>
+						<button v-on:click="convertMultiple">Multi Convert</button>			
+						<div v-for="currencyto in convertedMultiCurrency">
+							<br>
+								<span>From {{convertfrom}}: {{amount}} to {{currencyto.currency}}:  {{currencyto.val}}</span>
+							<br>
+						</div>
+						<div v-if="showDownload">
+							<br>
+								<button v-on:click="downloadCsv">Download in CSV</button>
+							<br>
+						</div>	
+					</div>
+					<br>
+				</center>
+			</div>
+		</div>
+      
+       <script src="index.js"></script> 
+	</body>
+</html>
