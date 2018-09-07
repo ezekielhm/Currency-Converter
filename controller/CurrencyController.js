@@ -144,13 +144,3 @@ exports.convert_multi_currency = async function(req,res) {
 	res.send(jsonResponse);
 
 }
-
-exports.get_csv = function(req,res) {
-
-	res.setHeader('Content-disposition', 'attachment; filename=currency.csv');
-  	res.setHeader('content-type', 'text/csv');
-  	var csvStream = csv.createWriteStream({headers: true, objectMode: true});
-  	csvStream.pipe(res);
- 	csvStream.write({'col1':'val1', 'col2':'val2'});
- 	csvStream.end();
-}	

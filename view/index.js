@@ -1,6 +1,6 @@
 var vm = new Vue({
-   el: '#databinding',
-   data: {
+    el: '#databinding',
+    data: {
       name:'',
       currencyfrom : [
          {name : "USD", desc:"US Dollar"},
@@ -15,15 +15,25 @@ var vm = new Vue({
       MultiCurrvalue: [],
       convertedMultiCurrency: [],
       showDownload: false
-   },
-   components: {
-    Multiselect: window.VueMultiselect.default
-  },
-   methods: {
+    },
+    components: {
+      Multiselect: window.VueMultiselect.default
+    },
+    watch: {
+      amount: function (val) {
+        this.convertedMultiCurrency = [];
+        this.showDownload = false;
+      },
+      convertfrom: function (val) {
+        this.convertedMultiCurrency = [];
+        this.showDownload = false;
+      }
+    },
+    methods: {
       async getCurrency(){
-         this.currencyfrom = [];
-         var currencyInfo = axios.get(window.location + 'currency/getAll')
-         try{
+          this.currencyfrom = [];
+          var currencyInfo = axios.get(window.location + 'currency/getAll')
+          try{
             var currencyInfoResponse = await currencyInfo
 
             if(currencyInfoResponse.data.status = 'success'){
@@ -100,20 +110,58 @@ var vm = new Vue({
          }
          this.showDownload = true;
       },
-      async downloadCsv() {
-         // var csvData = {
-         //    data: this.convertedMultiCurrency,
-         //    amount: this.amount,
-         //    from: this.convertfrom
-         // }
+      downloadCsv() {
+         this.JSONToCSVConvertor(this.convertedMultiCurrency,'From: ' + this.convertfrom + ' Amount: ' + this.amount,true)
+      },
+      JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+          var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+          
+          var CSV = '';    
 
-         var getCsv = axios.get(window.location + 'currency/getCsv')
+          
+          CSV += ReportTitle + '\r\n\n';
 
-         try{
-            var getCsvResponse = await getCsv;
-         } catch (error) {
-            alert(error)
-         }
+          if (ShowLabel) {
+              var row = "";
+              for (var index in arrData[0]) {
+                  row += index + ',';
+              }
+
+              row = row.slice(0, -1);
+
+              CSV += row + '\r\n';
+          }
+          
+
+          for (var i = 0; i < arrData.length; i++) {
+              var row = "";
+              for (var index in arrData[i]) {
+                  row += '"' + arrData[i][index] + '",';
+              }
+              row.slice(0, row.length - 1);
+              CSV += row + '\r\n';
+          }
+
+          if (CSV == '') {        
+              alert("Invalid data");
+              return;
+          }   
+          
+
+          var fileName = "MultiConvert_";
+          fileName += ReportTitle.replace(/ /g,"_");   
+          
+          var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+          
+          var link = document.createElement("a");    
+          link.href = uri;
+          
+          link.style = "visibility:hidden";
+          link.download = fileName + ".csv";
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
       }
    },
    mounted: function () {

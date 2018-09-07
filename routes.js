@@ -11,6 +11,4 @@ router.post('/currency/convert', currency_controller.convert_currency);
 
 router.post('/currency/multiConvert',currency_controller.convert_multi_currency);
 
-router.get('/currency/getCsv', currency_controller.get_csv);
-
 module.exports = router;
